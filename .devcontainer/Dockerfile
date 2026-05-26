@@ -11,8 +11,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tmux \
     build-essential \
     wget \
-    gdal-bin \
-    python3-gdal \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Oh My Zsh (unattended)
@@ -20,9 +18,9 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 
 # zsh-autosuggestions + zsh-syntax-highlighting
 RUN git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions \
-        ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
     && git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting \
-        ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
 # Wire up plugins and venv activation in .zshrc
 RUN sed -i 's/^plugins=.*/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc \
