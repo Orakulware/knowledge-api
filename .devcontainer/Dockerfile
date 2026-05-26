@@ -33,4 +33,8 @@ WORKDIR /app
 
 RUN uv tool install ruff
 RUN uv tool install mypy
-# Copy requirements first so this layer is cached independently of source changes
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-install-project
+
+COPY . .
