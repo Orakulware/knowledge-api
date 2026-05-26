@@ -1,5 +1,5 @@
 {
-  "name": "api-snowpay-barva",
+  "name": "orakulware-knowledge-api",
   "mounts": [
     "source=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock,type=bind"
   ],
