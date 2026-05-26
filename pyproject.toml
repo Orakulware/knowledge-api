@@ -1,0 +1,26 @@
+[project]
+name = "knowledge-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = []
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "D",
+    # identitcal by code != identical by meaning
+    "SIM114",
+
+    # awful things, never use.
+    # It makes runtime work differently from typechecker
+    "TC001",
+    "TC002",
+    "TC003",
+
+    # only affects perfomance and brings nothing useful
+    "UP038",
+]
+# Sort in alphabet order
+extend-select = ["I"]
