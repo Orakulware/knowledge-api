@@ -1,7 +1,10 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, Field
 
 from knowledge_api import middleware
+from knowledge_api.config import AuthCredsConfig
 from knowledge_api.schemas import AppError, ErrorResponse
 
 TOKEN_TTL = 60 * 60 * 24  # 1 day
@@ -22,8 +25,12 @@ class LoginResponseBody(BaseModel):
     dependencies=[Depends(middleware.rate_limiter)],
     responses={403: {"model": ErrorResponse}},
 )
-async def login(response: Response, lrb: LoginRequestBody) -> LoginResponseBody:
-    if lrb.username == "admin" and lrb.password == "admin":
+async def login(
+    response: Response,
+    lrb: LoginRequestBody,
+    creds: Annotated[AuthCredsConfig, Depends(AuthCredsConfig)],
+) -> LoginResponseBody:
+    if lrb.username == creds.access_username and lrb.password == creds.access_password:
         token = middleware.auth.create_access_token(uid=lrb.username)
         response.set_cookie(
             key="access_token",
