@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, Field
 
 from knowledge_api import middleware
 from knowledge_api.schemas import AppError, ErrorResponse
 
+TOKEN_TTL = 60 * 60 * 24  # 1 day
 auth_router = APIRouter()
 
 
@@ -21,9 +22,17 @@ class LoginResponseBody(BaseModel):
     dependencies=[Depends(middleware.rate_limiter)],
     responses={403: {"model": ErrorResponse}},
 )
-async def login(lrb: LoginRequestBody) -> LoginResponseBody:
+async def login(response: Response, lrb: LoginRequestBody) -> LoginResponseBody:
     if lrb.username == "admin" and lrb.password == "admin":
         token = middleware.auth.create_access_token(uid=lrb.username)
+        response.set_cookie(
+            key="access_token",
+            value=token,
+            httponly=True,
+            secure=True,
+            samesite="strict",
+            max_age=TOKEN_TTL,
+        )
         return LoginResponseBody(access_token=token)
     raise AppError(
         status_code=403,
