@@ -20,6 +20,10 @@ class LoginResponseBody(BaseModel):
     access_token: str = Field(examples=["access_token"])
 
 
+class LogoutResponseBody(BaseModel):
+    message: str = Field(default="successful logout", examples=["successful logout"])
+
+
 @auth_router.post(
     "/login/",
     dependencies=[Depends(middleware.rate_limiter)],
@@ -46,3 +50,16 @@ async def login(
         code="INVALID_CREDENTIALS",
         detail="Credentials didn't match",
     )
+
+
+@auth_router.delete(
+    path="/logout/",
+    dependencies=[
+        Depends(middleware.rate_limiter),
+        Depends(middleware.auth.access_token_required),
+    ],
+    responses={401: {"model": ErrorResponse}},
+)
+async def logout(response: Response) -> LogoutResponseBody:
+    response.delete_cookie(key="access_token")
+    return LogoutResponseBody()
