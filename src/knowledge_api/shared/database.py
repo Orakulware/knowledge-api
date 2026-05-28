@@ -1,14 +1,13 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from config import PostgresConfig
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-
-from knowledge_api.config import PostgresConfig
 
 
 class SQLAlchemyDatabase:

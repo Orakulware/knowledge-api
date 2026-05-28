@@ -1,9 +1,8 @@
+import middleware
+from auth import presentation
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
-from knowledge_api import middleware
-from knowledge_api.auth import presentation
-from knowledge_api.schemas import AppError, ErrorResponse
+from schemas import AppError, ErrorResponse
 
 __all__ = ["AppError", "ErrorResponse"]
 

@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends
 
-from knowledge_api import middleware
-from knowledge_api.schemas import AppError
+import middleware
+from schemas import AppError
 
 media_record_router = APIRouter()
+
 
 @media_record_router.post(
     path="/",
