@@ -37,6 +37,7 @@ dev = [
 [tool.mypy]
 python_version = "3.14"
 strict = true
+mypy_path = ["src/knowledge_api"]
 # dmypy fine-grained incremental crashes on Python 3.14 stdlib (concurrent.futures KeyError)
 # disable incremental mode until upstream mypy fixes the daemon
 incremental = false

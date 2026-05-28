@@ -4,7 +4,8 @@
     "source=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock,type=bind"
   ],
   "remoteEnv": {
-    "SSH_AUTH_SOCK": "/run/host-services/ssh-auth.sock"
+    "SSH_AUTH_SOCK": "/run/host-services/ssh-auth.sock",
+    "PYTHONPATH": "${containerWorkspaceFolder}/src/knowledge_api"
   },
   "build": {
     "dockerfile": "Dockerfile",
