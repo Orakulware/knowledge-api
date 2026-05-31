@@ -2,4 +2,11 @@ $kind: http-request
 name: Login
 url: http://localhost:8000/login
 method: POST
+body:
+  type: json
+  content: |-
+    {
+        "username": "admin",
+        "password": "admin"
+    }
 order: 1779954829382
