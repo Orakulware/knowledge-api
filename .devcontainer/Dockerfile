@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tmux \
     build-essential \
     wget \
+    gnupg \
+    pinentry-curses \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Oh My Zsh (unattended)

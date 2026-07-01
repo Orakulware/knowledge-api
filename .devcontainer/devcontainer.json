@@ -1,12 +1,18 @@
 {
   "name": "orakulware-knowledge-api",
   "mounts": [
-    "source=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock,type=bind"
+    "source=/run/host-services/ssh-auth.sock,target=/run/host-services/ssh-auth.sock,type=bind",
+    "source=${localEnv:HOME}/.gnupg,target=/run/host-gnupg,type=bind,readonly"
   ],
   "remoteEnv": {
     "SSH_AUTH_SOCK": "/run/host-services/ssh-auth.sock",
     "PYTHONPATH": "${containerWorkspaceFolder}/src/knowledge_api"
   },
+  "runArgs": [
+    "--env-file",
+    "${localWorkspaceFolder}/.devcontainer/devcontainer.env"
+  ],
+  "postCreateCommand": "mkdir -p /root/.gnupg && chmod 700 /root/.gnupg && cp -r /run/host-gnupg/. /root/.gnupg/ && find /root/.gnupg -name 'S.*' -delete && find /root/.gnupg -name '*.lock' -delete && printf 'pinentry-program /usr/bin/pinentry\\n' > /root/.gnupg/gpg-agent.conf && chmod 700 /root/.gnupg /root/.gnupg/private-keys-v1.d && find /root/.gnupg -type f -exec chmod 600 {} \\; && echo 'export GPG_TTY=$(tty)' >> ~/.zshrc && git config --global commit.gpgsign true && git config --global user.signingkey \"$GPG_SIGNING_KEY\" && git config --global user.name \"$GIT_USER_NAME\" && git config --global user.email \"$GIT_USER_EMAIL\"",
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."
