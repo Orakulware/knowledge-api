@@ -18,6 +18,18 @@ class Media:
     media_name: str
     reputation: float
 
+    def __init__(
+        self,
+        media_type: MediaType,
+        media_name: str,
+        reputation: float,
+    ) -> None:
+        # UUIDv7 best for creating an index.
+        self.id = uuid.uuid7()
+        self.media_type = media_type
+        self.media_name = media_name
+        self.reputation = reputation
+
 
 class MediaRecord:
     """Model of media_records table.
