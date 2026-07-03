@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends
-
 import middleware
+from fastapi import APIRouter, Depends
 from schemas import AppError
 
 media_record_router = APIRouter()
