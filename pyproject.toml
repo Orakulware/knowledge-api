@@ -5,8 +5,10 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.18.4",
     "authx>=1.6.0",
     "fastapi[standard]>=0.136.3",
+    "sqlalchemy>=2.0.50",
 ]
 
 [tool.ruff.lint]
@@ -36,6 +38,7 @@ dev = [
 [tool.mypy]
 python_version = "3.14"
 strict = true
+mypy_path = ["src/knowledge_api"]
 # dmypy fine-grained incremental crashes on Python 3.14 stdlib (concurrent.futures KeyError)
 # disable incremental mode until upstream mypy fixes the daemon
 incremental = false

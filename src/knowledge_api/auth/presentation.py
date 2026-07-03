@@ -1,11 +1,10 @@
 from typing import Annotated
 
+import middleware
+from config import AuthCredsConfig
 from fastapi import APIRouter, Depends, Response
 from pydantic import BaseModel, Field
-
-from knowledge_api import middleware
-from knowledge_api.config import AuthCredsConfig
-from knowledge_api.schemas import AppError, ErrorResponse
+from schemas import AppError, ErrorResponse
 
 TOKEN_TTL = 60 * 60 * 24  # 1 day
 auth_router = APIRouter()
