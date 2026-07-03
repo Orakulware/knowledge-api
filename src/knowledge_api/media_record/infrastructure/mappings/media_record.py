@@ -5,6 +5,7 @@ from sqlalchemy import (
     UUID,
     Column,
     DateTime,
+    ForeignKey,
     String,
     Table,
 )
@@ -13,7 +14,14 @@ media_record_table = Table(
     "media_records",
     registry.mapping_registry.metadata,
     Column("id", UUID, primary_key=True),
-    Column("posted_by", String, nullable=False),
+    Column("added_by", String, nullable=False),
+    Column(
+        "posted_in_media",
+        UUID,
+        ForeignKey("media.id"),
+        nullable=False,
+        index=True,
+    ),
     Column("content", String, nullable=False),
     Column("posted_at", DateTime, nullable=False),
     Column("deleted_at", DateTime, nullable=True),
@@ -26,7 +34,8 @@ def map_media_record_table() -> None:
         MediaRecord,
         media_record_table,
         properties={
-            "posted_by": media_record_table.c.posted_by,
+            "added_by": media_record_table.c.added_by,
+            "posted_in_media": media_record_table.c.posted_in_media,
             "content": media_record_table.c.content,
             "posted_at": media_record_table.c.posted_at,
             "deleted_at": media_record_table.c.deleted_at,
