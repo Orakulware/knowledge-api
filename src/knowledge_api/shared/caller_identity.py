@@ -1,4 +1,11 @@
+import uuid
 from dataclasses import dataclass
+from enum import StrEnum
+
+
+class IdentityRole(StrEnum):
+    USER = "USER"
+    ADMIN = "ADMIN"
 
 
 @dataclass(frozen=True, slots=True)
@@ -7,4 +14,4 @@ class CallerIdentity:
     of application"""
 
     id: uuid.UUID
-    role: str
+    role: IdentityRole
