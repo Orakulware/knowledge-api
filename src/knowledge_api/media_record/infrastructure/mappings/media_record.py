@@ -14,7 +14,7 @@ media_record_table = Table(
     "media_records",
     registry.mapping_registry.metadata,
     Column("id", UUID, primary_key=True),
-    Column("added_by", String, nullable=False),
+    Column("added_by", UUID, nullable=False),
     Column(
         "posted_in_media",
         UUID,
