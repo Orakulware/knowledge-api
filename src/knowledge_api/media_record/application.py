@@ -5,7 +5,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from media_record import domain
-from media_record.infrastructure.exception import MediaRecordRepositoryError
+from media_record.exception import (
+    DuplicateMediaRecordError,
+    InvalidMediaReferenceError,
+    MediaRecordSaveError,
+)
+from media_record.infrastructure import exception as infrastructure_exception
 from media_record.infrastructure.infrastructure import MediaRecordRepository
 from shared.caller_identity import CallerIdentity
 from shared.transaction_manager import TransactionManager
@@ -45,9 +50,19 @@ class PostMediaRecord:
             await self._media_record_repository.save_media_record(
                 media_record=media_record,
             )
-        except MediaRecordRepositoryError:
-            logger.exception(msg="Failed to save media record")
+        except infrastructure_exception.DuplicateMediaRecordError as error:
+            logger.exception(msg="Media record with this id already exists")
             await self._transaction_manager.rollback()
-            return
+            raise DuplicateMediaRecordError from error
+        except infrastructure_exception.InvalidMediaReferenceError as error:
+            logger.exception(msg="Media record references a non-existent media")
+            await self._transaction_manager.rollback()
+            raise InvalidMediaReferenceError from error
+        except infrastructure_exception.MediaRecordConstraintViolationError as error:
+            logger.exception(
+                msg="Failed to save media record due to a constraint violation",
+            )
+            await self._transaction_manager.rollback()
+            raise MediaRecordSaveError from error
 
         await self._transaction_manager.commit()
