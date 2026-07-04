@@ -7,6 +7,7 @@ from sqlalchemy import (
     Float,
     String,
     Table,
+    UniqueConstraint,
 )
 
 media_table = Table(
@@ -16,6 +17,10 @@ media_table = Table(
     Column("media_type", Enum(MediaType, create_constraint=True), nullable=False),
     Column("media_name", String, nullable=False),
     Column("reputation", Float, nullable=False),
+    UniqueConstraint(
+        "media_type",
+        "media_name",
+    ),  # uq_media_media_type according to registry.py
 )
 
 
