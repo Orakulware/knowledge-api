@@ -32,4 +32,19 @@ class PostMediaRecord:
         self._media_record_repository = media_record_repository
 
     async def __call__(self, request: PostMediaRecordRequest) -> None:
-        raise NotImplementedError
+        media_record = domain.MediaRecord(
+            added_by=self._caller_identity.id,
+            content=request.content,
+            deleted_at=None,
+            metadata=request.metadata,
+            posted_at=request.posted_at,
+            posted_in_media=request.posted_in_media,
+        )
+        try:
+            await self._media_record_repository.save_media_record(
+                media_record=media_record,
+            )
+        except Exception:
+            logger.exception(msg="Failed to save media record")
+
+        await self._transaction_manager.commit()
