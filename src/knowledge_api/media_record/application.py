@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from media_record import domain
+from media_record.infrastructure.exception import MediaRecordRepositoryError
 from media_record.infrastructure.infrastructure import MediaRecordRepository
 from shared.caller_identity import CallerIdentity
 from shared.transaction_manager import TransactionManager
@@ -44,7 +45,9 @@ class PostMediaRecord:
             await self._media_record_repository.save_media_record(
                 media_record=media_record,
             )
-        except Exception:
+        except MediaRecordRepositoryError:
             logger.exception(msg="Failed to save media record")
+            await self._transaction_manager.rollback()
+            return
 
         await self._transaction_manager.commit()
