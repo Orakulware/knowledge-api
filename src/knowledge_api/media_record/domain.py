@@ -38,7 +38,7 @@ class MediaRecord:
     """
 
     id: uuid.UUID
-    added_by: str
+    added_by: uuid.UUID
     posted_in_media: uuid.UUID
     content: str
     posted_at: datetime
@@ -47,7 +47,7 @@ class MediaRecord:
 
     def __init__(  # noqa: PLR0913
         self,
-        added_by: str,
+        added_by: uuid.UUID,
         posted_in_media: uuid.UUID,
         content: str,
         posted_at: datetime,
