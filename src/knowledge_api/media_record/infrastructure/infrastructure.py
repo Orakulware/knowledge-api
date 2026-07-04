@@ -31,5 +31,4 @@ class SQLAlchemyRecordRepository(MediaRecordRepository):
         try:
             await self._session.execute(stmt)
         except IntegrityError as error:
-            await self._session.rollback()
             raise map_integrity_error(error) from error
