@@ -1,5 +1,8 @@
+import datetime
 import logging
+import uuid
 from dataclasses import dataclass
+from typing import Any
 
 from media_record import domain
 from media_record.infrastructure.infrastructure import MediaRecordRepository
@@ -11,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True, slots=True)
 class PostMediaRecordRequest:
-    record: domain.MediaRecord
+    posted_in_media: uuid.UUID
+    content: str
+    posted_at: datetime.datetime
+    metadata: dict[str, Any]
 
 
 class PostMediaRecord:
