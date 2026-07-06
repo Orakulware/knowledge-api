@@ -10,7 +10,7 @@ class ConfigError(ValueError):
         return f"Have you specified the variable {self._variable_name}?"
 
 
-def __get_str_from_env(key: str) -> str:
+def _get_str_from_env(key: str) -> str:
     if value := os.getenv(key):
         return value
     raise ConfigError(variable_name=key)
@@ -43,11 +43,11 @@ class PostgresConfig:
     @staticmethod
     def from_env() -> PostgresConfig:
         env_variables: dict[str, str] = {
-            "host": __get_str_from_env("POSTGRES_HOST_ENV"),
-            "port": __get_str_from_env("POSTGRES_PORT_ENV"),
-            "user": __get_str_from_env("POSTGRES_USER_ENV"),
-            "password": __get_str_from_env("POSTGRES_PASSWORD_ENV"),
-            "db": __get_str_from_env("POSTGRES_DB_NAME_ENV"),
+            "host": _get_str_from_env("POSTGRES_HOST_ENV"),
+            "port": _get_str_from_env("POSTGRES_PORT_ENV"),
+            "user": _get_str_from_env("POSTGRES_USER_ENV"),
+            "password": _get_str_from_env("POSTGRES_PASSWORD_ENV"),
+            "db": _get_str_from_env("POSTGRES_DB_NAME_ENV"),
         }
 
         return PostgresConfig(**env_variables)
