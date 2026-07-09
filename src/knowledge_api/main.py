@@ -1,13 +1,20 @@
 import middleware
-from auth import presentation
+import setup
+from auth import presentation as auth_presentation
+from config import PostgresConfig
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from media_record import presentation as media_record_presentation
 from schemas import AppError, ErrorResponse
+from shared.database import SQLAlchemyDatabase
 
 __all__ = ["AppError", "ErrorResponse"]
 
 app = FastAPI()
-app.include_router(presentation.auth_router)
+app.state.container = setup.bootstrap()
+app.state.database = SQLAlchemyDatabase(config=PostgresConfig.from_env())
+app.include_router(auth_presentation.auth_router)
+app.include_router(media_record_presentation.media_record_router)
 middleware.auth.handle_errors(app=app)
 
 
