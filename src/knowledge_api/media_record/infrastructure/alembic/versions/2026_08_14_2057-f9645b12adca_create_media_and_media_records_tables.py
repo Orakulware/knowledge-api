@@ -44,8 +44,8 @@ def upgrade() -> None:
         sa.Column("added_by", sa.UUID(), nullable=False),
         sa.Column("posted_in_media", sa.UUID(), nullable=False),
         sa.Column("content", sa.String(), nullable=False),
-        sa.Column("posted_at", sa.DateTime(), nullable=False),
-        sa.Column("deleted_at", sa.DateTime(), nullable=True),
+        sa.Column("posted_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("metadata", sa.JSON(), nullable=False),
         sa.ForeignKeyConstraint(
             ["posted_in_media"],

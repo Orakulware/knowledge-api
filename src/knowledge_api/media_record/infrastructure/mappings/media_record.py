@@ -23,8 +23,8 @@ media_record_table = Table(
         index=True,
     ),
     Column("content", String, nullable=False),
-    Column("posted_at", DateTime, nullable=False),
-    Column("deleted_at", DateTime, nullable=True),
+    Column("posted_at", DateTime(timezone=True), nullable=False),
+    Column("deleted_at", DateTime(timezone=True), nullable=True),
     Column("metadata", JSON, nullable=False, default=dict),
 )
 
