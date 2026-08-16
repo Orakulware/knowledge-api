@@ -51,3 +51,53 @@ class PostgresConfig:
         }
 
         return PostgresConfig(**env_variables)
+
+
+@dataclass(frozen=True, slots=True)
+class RabbitMQConfig:
+    host: str
+    port: str
+    user: str
+    password: str
+    vhost: str
+
+    @property
+    def url(self) -> str:
+        return (
+            f"amqp://{self.user}:{self.password}@{self.host}:{self.port}/{self.vhost}"
+        )
+
+    @staticmethod
+    def from_env() -> RabbitMQConfig:
+        env_variables: dict[str, str] = {
+            "host": _get_str_from_env("RABBITMQ_HOST_ENV"),
+            "port": _get_str_from_env("RABBITMQ_PORT_ENV"),
+            "user": _get_str_from_env("RABBITMQ_USER_ENV"),
+            "password": _get_str_from_env("RABBITMQ_PASSWORD_ENV"),
+            "vhost": _get_str_from_env("RABBITMQ_VHOST_ENV"),
+        }
+
+        return RabbitMQConfig(**env_variables)
+
+
+@dataclass(frozen=True, slots=True)
+class RedisConfig:
+    host: str
+    port: str
+    password: str
+    db: str
+
+    @property
+    def url(self) -> str:
+        return f"redis://:{self.password}@{self.host}:{self.port}/{self.db}"
+
+    @staticmethod
+    def from_env() -> RedisConfig:
+        env_variables: dict[str, str] = {
+            "host": _get_str_from_env("REDIS_HOST_ENV"),
+            "port": _get_str_from_env("REDIS_PORT_ENV"),
+            "password": _get_str_from_env("REDIS_PASSWORD_ENV"),
+            "db": _get_str_from_env("REDIS_DB_ENV"),
+        }
+
+        return RedisConfig(**env_variables)
