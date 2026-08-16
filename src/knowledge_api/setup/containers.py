@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 
-from config import PostgresConfig
 from dependency_injector import containers, providers
+from setup.providers import ApplicationConfigProvider
 from shared.database import SQLAlchemyDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +12,6 @@ async def _db_session(database: SQLAlchemyDatabase) -> AsyncGenerator[AsyncSessi
 
 
 class Container(containers.DeclarativeContainer):
-    config = providers.Singleton(PostgresConfig.from_env)
-    database = providers.Singleton(SQLAlchemyDatabase, config=config)
+    config = providers.Container(ApplicationConfigProvider)
+    database = providers.Singleton(SQLAlchemyDatabase, config=config.postgres)
     db_session = providers.ContextLocalResource(_db_session, database=database)
