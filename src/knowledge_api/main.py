@@ -8,7 +8,6 @@ from config import PostgresConfig
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from media_record import presentation as media_record_presentation
-from media_record.infrastructure import consumer
 from schemas import AppError, ErrorResponse
 from shared.database import SQLAlchemyDatabase
 
@@ -17,9 +16,7 @@ __all__ = ["AppError", "ErrorResponse"]
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI) -> AsyncGenerator[None]:
-    await consumer.broker.startup()
     yield
-    await consumer.broker.shutdown()
 
 
 app = FastAPI(lifespan=lifespan)
