@@ -28,6 +28,10 @@ class AuthCredsConfig:
         self.access_password = login_password
 
 
+def get_jwt_secret_key() -> str:
+    return _get_str_from_env("JWT_SECRET_KEY_ENV")
+
+
 @dataclass(frozen=True, slots=True)
 class PostgresConfig:
     host: str
