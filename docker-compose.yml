@@ -44,7 +44,7 @@ services:
 
   migrate:
     build: .
-    command: ["uv", "run", "alembic", "-c", "alembic.ini", "upgrade", "head"]
+    command: ["alembic", "-c", "alembic.ini", "upgrade", "head"]
     env_file: .env
     environment:
       POSTGRES_HOST_ENV: postgres
