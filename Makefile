@@ -12,7 +12,7 @@ typecheck:
 test:
 	uv run pytest
 
-ALEMBIC = uv run alembic -c src/user/infrastructure/alembic.ini
+ALEMBIC = uv run alembic -c alembic.ini
 ENV = set -a && . ./.env && set +a &&
 
 # ── Docker ────────────────────────────────────────────────────────────────────
@@ -48,10 +48,13 @@ makemigration:
 run:
 	uv run fastapi dev src/knowledge_api/main.py --host 0.0.0.0 --port 8000 --reload
 
+worker:
+	uv run taskiq worker media_record.infrastructure.consumer:broker --reload
+
 format:
 	uv run ruff format .
 
 install:
 	uv sync
 
-.PHONY: up down up-db migrate downgrade migration makemigration run format lint install
+.PHONY: up down up-db migrate downgrade migration makemigration run worker format lint install
