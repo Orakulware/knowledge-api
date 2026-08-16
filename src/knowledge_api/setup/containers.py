@@ -26,6 +26,8 @@ class Container(containers.DeclarativeContainer):
     media_record_infrastructure = providers.Container(
         MediaRecordInfrastructureProvider,
         session=db_session,
+        rabbitmq_config=config.rabbitmq,
+        redis_config=config.redis,
     )
     media_record_application = providers.Container(
         MediaRecordApplicationProvider,

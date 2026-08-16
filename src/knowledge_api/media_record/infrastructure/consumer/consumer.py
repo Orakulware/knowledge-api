@@ -2,7 +2,6 @@ import logging
 from abc import ABC, abstractmethod
 
 from config import RabbitMQConfig, RedisConfig
-from media_record.infrastructure.consumer.exceptions import ConsumerAlreadyUpError
 from taskiq import AsyncBroker, AsyncResultBackend
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
@@ -11,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class MediaRecordConsumer(ABC):
+    @property
+    @abstractmethod
+    def broker(self) -> AsyncBroker:
+        raise NotImplementedError
+
     @abstractmethod
     async def startup(self) -> None:
         raise NotImplementedError
@@ -43,10 +47,12 @@ class TaskiqAioPikaRedisMediaRecordConsumer(MediaRecordConsumer):
             self._result_backend,
         )
 
+    @property
+    def broker(self) -> AsyncBroker:
+        return self._broker
+
     async def startup(self) -> None:
         logger.info("Starting up %s consumer", self.__class__.__name__)
-        if self._broker.is_worker_process is True:
-            raise ConsumerAlreadyUpError
         await self._broker.startup()
 
     async def shutdown(self) -> None:
