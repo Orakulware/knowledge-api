@@ -4,7 +4,11 @@ from typing import Annotated, Any
 
 import middleware
 from fastapi import APIRouter, Depends, Request
-from media_record.infrastructure.consumer.tasks import PostMediaRecordPayload
+from media_record.domain import MediaType
+from media_record.infrastructure.consumer.tasks import (
+    PostMediaPayload,
+    PostMediaRecordPayload,
+)
 from pydantic import BaseModel, Field
 from taskiq import AsyncTaskiqDecoratedTask
 
@@ -44,3 +48,31 @@ async def post_media_record(
         metadata=body.metadata,
     )
     await post_media_record_task.kiq(payload=payload)
+
+
+class PostMediaRequestBody(BaseModel):
+    media_type: MediaType
+    media_name: str = Field(examples=["The Daily Times"])
+
+
+def get_post_media_task(request: Request) -> AsyncTaskiqDecoratedTask:
+    return request.app.state.post_media_task
+
+
+@media_record_router.post(
+    path="/media/",
+    status_code=202,
+    dependencies=[
+        Depends(middleware.rate_limiter),
+        Depends(middleware.auth.access_token_required),
+    ],
+)
+async def post_media(
+    body: PostMediaRequestBody,
+    post_media_task: Annotated[AsyncTaskiqDecoratedTask, Depends(get_post_media_task)],
+) -> None:
+    payload = PostMediaPayload(
+        media_type=body.media_type,
+        media_name=body.media_name,
+    )
+    await post_media_task.kiq(payload=payload)

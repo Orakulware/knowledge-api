@@ -12,3 +12,11 @@ class InvalidMediaReferenceError(MediaRecordError):
 
 class MediaRecordSaveError(MediaRecordError):
     """Raised when a MediaRecord could not be saved for any other reason."""
+
+
+class DuplicateMediaError(MediaRecordError):
+    """Raised when a Media with the same type/name already exists."""
+
+
+class MediaSaveError(MediaRecordError):
+    """Raised when a Media could not be saved for any other reason."""

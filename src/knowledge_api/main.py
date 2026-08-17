@@ -23,7 +23,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     consumer = container.media_record_infrastructure.media_record_consumer()
     broker = consumer.broker
 
-    app.state.post_media_record_task = media_record_tasks.register_tasks(broker)
+    app.state.post_media_record_task, app.state.post_media_task = (
+        media_record_tasks.register_tasks(broker)
+    )
 
     # AioPikaBroker only opens its read channel (needed to consume messages)
     # when is_worker_process is True - normally set by the `taskiq worker` CLI.

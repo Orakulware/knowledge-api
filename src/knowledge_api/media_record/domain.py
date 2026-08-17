@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Any
 
@@ -17,18 +17,23 @@ class Media:
     media_type: MediaType
     media_name: str
     reputation: float
+    added_at: datetime
+    deleted_at: datetime | None
 
     def __init__(
         self,
         media_type: MediaType,
         media_name: str,
-        reputation: float,
+        reputation: float = 0.0,
+        deleted_at: datetime | None = None,
     ) -> None:
         # UUIDv7 best for creating an index.
         self.id = uuid.uuid7()
         self.media_type = media_type
         self.media_name = media_name
         self.reputation = reputation
+        self.added_at = datetime.now(UTC)
+        self.deleted_at = deleted_at
 
 
 class MediaRecord:

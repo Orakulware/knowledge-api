@@ -31,6 +31,8 @@ def upgrade() -> None:
         ),
         sa.Column("media_name", sa.String(), nullable=False),
         sa.Column("reputation", sa.Float(), nullable=False),
+        sa.Column("added_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_media")),
         sa.UniqueConstraint(
             "media_type",

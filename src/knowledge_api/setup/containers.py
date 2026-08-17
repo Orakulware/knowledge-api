@@ -33,5 +33,6 @@ class Container(containers.DeclarativeContainer):
         MediaRecordApplicationProvider,
         caller_identity=caller_identity,
         media_record_repository=media_record_infrastructure.media_record_repository,
+        media_repository=media_record_infrastructure.media_repository,
         transaction_manager=media_record_infrastructure.transaction_manager,
     )

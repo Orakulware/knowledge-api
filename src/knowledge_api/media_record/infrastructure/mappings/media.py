@@ -3,6 +3,7 @@ from media_record.infrastructure.mappings import registry
 from sqlalchemy import (
     UUID,
     Column,
+    DateTime,
     Enum,
     Float,
     String,
@@ -17,6 +18,8 @@ media_table = Table(
     Column("media_type", Enum(MediaType, create_constraint=True), nullable=False),
     Column("media_name", String, nullable=False),
     Column("reputation", Float, nullable=False),
+    Column("added_at", DateTime(timezone=True), nullable=False),
+    Column("deleted_at", DateTime(timezone=True), nullable=True),
     UniqueConstraint(
         "media_type",
         "media_name",
@@ -32,5 +35,7 @@ def map_media_table() -> None:
             "media_type": media_table.c.media_type,
             "media_name": media_table.c.media_name,
             "reputation": media_table.c.reputation,
+            "added_at": media_table.c.added_at,
+            "deleted_at": media_table.c.deleted_at,
         },
     )

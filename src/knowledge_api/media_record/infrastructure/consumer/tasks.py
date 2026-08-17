@@ -5,11 +5,19 @@ import uuid
 from typing import Any
 
 from dependency_injector.wiring import Provide, inject
-from media_record.application import PostMediaRecord, PostMediaRecordRequest
+from media_record.application import (
+    PostMedia,
+    PostMediaRecord,
+    PostMediaRecordRequest,
+    PostMediaRequest,
+)
+from media_record.domain import MediaType
 from media_record.exception import (
+    DuplicateMediaError,
     DuplicateMediaRecordError,
     InvalidMediaReferenceError,
     MediaRecordSaveError,
+    MediaSaveError,
 )
 from setup.containers import Container
 from taskiq import AsyncBroker, AsyncTaskiqDecoratedTask
@@ -50,5 +58,33 @@ async def _post_media_record(
         raise
 
 
-def register_tasks(broker: AsyncBroker) -> AsyncTaskiqDecoratedTask:
-    return broker.register_task(_post_media_record, task_name="post_media_record")
+@dataclasses.dataclass(frozen=True, slots=True)
+class PostMediaPayload:
+    media_type: MediaType
+    media_name: str
+
+
+@inject
+async def _post_media(
+    payload: PostMediaPayload,
+    interactor: PostMedia = Provide[Container.media_record_application.post_media],
+) -> None:
+    logger.info("Received the post media payload")
+    request = PostMediaRequest(
+        media_type=payload.media_type,
+        media_name=payload.media_name,
+    )
+    try:
+        await interactor(request=request)
+    except DuplicateMediaError, MediaSaveError:
+        logger.exception("Failed to post media")
+        raise
+
+
+def register_tasks(
+    broker: AsyncBroker,
+) -> tuple[AsyncTaskiqDecoratedTask, AsyncTaskiqDecoratedTask]:
+    return (
+        broker.register_task(_post_media_record, task_name="post_media_record"),
+        broker.register_task(_post_media, task_name="post_media"),
+    )

@@ -1,6 +1,8 @@
 from media_record.infrastructure.exception import (
+    DuplicateMediaError,
     DuplicateMediaRecordError,
     InvalidMediaReferenceError,
+    MediaConstraintViolationError,
     MediaRecordConstraintViolationError,
     MediaRecordRepositoryError,
 )
@@ -16,6 +18,12 @@ _ERROR_TYPE_BY_CONSTRAINT_NAME: dict[str, type[MediaRecordRepositoryError]] = {
     _FK_MEDIA_RECORDS_POSTED_IN_MEDIA_CONSTRAINT_NAME: InvalidMediaReferenceError,
 }
 
+_UQ_MEDIA_MEDIA_TYPE_CONSTRAINT_NAME = "uq_media_media_type"
+
+_MEDIA_ERROR_TYPE_BY_CONSTRAINT_NAME: dict[str, type[MediaRecordRepositoryError]] = {
+    _UQ_MEDIA_MEDIA_TYPE_CONSTRAINT_NAME: DuplicateMediaError,
+}
+
 
 def map_integrity_error(error: IntegrityError) -> MediaRecordRepositoryError:
     """Check which known constraint name appears in the driver error message
@@ -25,3 +33,13 @@ def map_integrity_error(error: IntegrityError) -> MediaRecordRepositoryError:
         if constraint_name in message:
             return error_type(f"Violated constraint: {constraint_name}")
     return MediaRecordConstraintViolationError(message)
+
+
+def map_media_integrity_error(error: IntegrityError) -> MediaRecordRepositoryError:
+    """Check which known constraint name appears in the driver error message
+    and translate it into a MediaRepository error."""
+    message = str(error.orig)
+    for constraint_name, error_type in _MEDIA_ERROR_TYPE_BY_CONSTRAINT_NAME.items():
+        if constraint_name in message:
+            return error_type(f"Violated constraint: {constraint_name}")
+    return MediaConstraintViolationError(message)

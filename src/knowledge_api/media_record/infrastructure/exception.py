@@ -12,3 +12,11 @@ class InvalidMediaReferenceError(MediaRecordRepositoryError):
 
 class MediaRecordConstraintViolationError(MediaRecordRepositoryError):
     """Raised for any other database constraint violation on a MediaRecord."""
+
+
+class DuplicateMediaError(MediaRecordRepositoryError):
+    """Raised when a Media with the same type/name already exists."""
+
+
+class MediaConstraintViolationError(MediaRecordRepositoryError):
+    """Raised for any other database constraint violation on a Media."""

@@ -6,12 +6,17 @@ from typing import Any
 
 from media_record import domain
 from media_record.exception import (
+    DuplicateMediaError,
     DuplicateMediaRecordError,
     InvalidMediaReferenceError,
     MediaRecordSaveError,
+    MediaSaveError,
 )
 from media_record.infrastructure import exception as infrastructure_exception
-from media_record.infrastructure.infrastructure import MediaRecordRepository
+from media_record.infrastructure.infrastructure import (
+    MediaRecordRepository,
+    MediaRepository,
+)
 from shared.caller_identity import CallerIdentity
 from shared.transaction_manager import TransactionManager
 
@@ -64,5 +69,39 @@ class PostMediaRecord:
             )
             await self._transaction_manager.rollback()
             raise MediaRecordSaveError from error
+
+        await self._transaction_manager.commit()
+
+
+@dataclass(frozen=True, slots=True)
+class PostMediaRequest:
+    media_type: domain.MediaType
+    media_name: str
+
+
+class PostMedia:
+    def __init__(
+        self,
+        transaction_manager: TransactionManager,
+        media_repository: MediaRepository,
+    ) -> None:
+        self._transaction_manager = transaction_manager
+        self._media_repository = media_repository
+
+    async def __call__(self, request: PostMediaRequest) -> None:
+        media = domain.Media(
+            media_type=request.media_type,
+            media_name=request.media_name,
+        )
+        try:
+            await self._media_repository.save_media(media=media)
+        except infrastructure_exception.DuplicateMediaError as error:
+            logger.exception(msg="Media with this type/name already exists")
+            await self._transaction_manager.rollback()
+            raise DuplicateMediaError from error
+        except infrastructure_exception.MediaConstraintViolationError as error:
+            logger.exception(msg="Failed to save media due to a constraint violation")
+            await self._transaction_manager.rollback()
+            raise MediaSaveError from error
 
         await self._transaction_manager.commit()
