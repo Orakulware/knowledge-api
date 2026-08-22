@@ -29,6 +29,9 @@ ignore = [
     "TC002",
     "TC003",
 
+    # Already have license
+    "CPY001",
+
     # only affects perfomance and brings nothing useful
     "UP038",
 ]
