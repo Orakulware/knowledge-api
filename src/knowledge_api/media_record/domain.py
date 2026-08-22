@@ -19,6 +19,7 @@ class Media:
     reputation: float
     added_at: datetime
     deleted_at: datetime | None
+    metadata: dict[str, Any]
 
     def __init__(
         self,
@@ -26,7 +27,10 @@ class Media:
         media_name: str,
         reputation: float = 0.0,
         deleted_at: datetime | None = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
+        if metadata is None:
+            metadata = {}
         # UUIDv7 best for creating an index.
         self.id = uuid.uuid7()
         self.media_type = media_type
@@ -34,6 +38,7 @@ class Media:
         self.reputation = reputation
         self.added_at = datetime.now(UTC)
         self.deleted_at = deleted_at
+        self.metadata = metadata
 
 
 class MediaRecord:

@@ -56,6 +56,7 @@ class SQLAlchemyMediaRepository(MediaRepository):
             reputation=media.reputation,
             added_at=media.added_at,
             deleted_at=media.deleted_at,
+            metadata=media.metadata,
         )
         try:
             await self._session.execute(stmt)

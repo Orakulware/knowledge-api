@@ -4,7 +4,7 @@ Revision ID: f9645b12adca
 Revises:
 Create Date: 2026-08-14 20:57:48.128754
 
-"""
+"""  # noqa: N999
 
 from collections.abc import Sequence
 
@@ -33,6 +33,7 @@ def upgrade() -> None:
         sa.Column("reputation", sa.Float(), nullable=False),
         sa.Column("added_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("metadata", sa.JSON(), nullable=False),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_media")),
         sa.UniqueConstraint(
             "media_type",

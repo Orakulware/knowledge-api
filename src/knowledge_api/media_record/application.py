@@ -77,6 +77,7 @@ class PostMediaRecord:
 class PostMediaRequest:
     media_type: domain.MediaType
     media_name: str
+    metadata: dict[str, Any]
 
 
 class PostMedia:
@@ -92,6 +93,7 @@ class PostMedia:
         media = domain.Media(
             media_type=request.media_type,
             media_name=request.media_name,
+            metadata=request.metadata,
         )
         try:
             await self._media_repository.save_media(media=media)

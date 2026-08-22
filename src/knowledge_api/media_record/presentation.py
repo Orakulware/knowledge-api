@@ -53,6 +53,7 @@ async def post_media_record(
 class PostMediaRequestBody(BaseModel):
     media_type: MediaType
     media_name: str = Field(examples=["The Daily Times"])
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 def get_post_media_task(request: Request) -> AsyncTaskiqDecoratedTask:
@@ -74,5 +75,6 @@ async def post_media(
     payload = PostMediaPayload(
         media_type=body.media_type,
         media_name=body.media_name,
+        metadata=body.metadata,
     )
     await post_media_task.kiq(payload=payload)

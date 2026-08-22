@@ -1,6 +1,7 @@
 from media_record.domain import Media, MediaType
 from media_record.infrastructure.mappings import registry
 from sqlalchemy import (
+    JSON,
     UUID,
     Column,
     DateTime,
@@ -20,6 +21,7 @@ media_table = Table(
     Column("reputation", Float, nullable=False),
     Column("added_at", DateTime(timezone=True), nullable=False),
     Column("deleted_at", DateTime(timezone=True), nullable=True),
+    Column("metadata", JSON, nullable=False, default=dict),
     UniqueConstraint(
         "media_type",
         "media_name",
@@ -37,5 +39,6 @@ def map_media_table() -> None:
             "reputation": media_table.c.reputation,
             "added_at": media_table.c.added_at,
             "deleted_at": media_table.c.deleted_at,
+            "metadata": media_table.c.metadata,
         },
     )

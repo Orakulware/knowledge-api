@@ -62,6 +62,7 @@ async def _post_media_record(
 class PostMediaPayload:
     media_type: MediaType
     media_name: str
+    metadata: dict[str, Any]
 
 
 @inject
@@ -73,6 +74,7 @@ async def _post_media(
     request = PostMediaRequest(
         media_type=payload.media_type,
         media_name=payload.media_name,
+        metadata=payload.metadata,
     )
     try:
         await interactor(request=request)
