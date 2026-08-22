@@ -15,6 +15,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pinentry-curses \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js (npm bundled). Required to install claude skills of your choise.
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install Oh My Zsh (unattended)
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
@@ -37,6 +42,6 @@ RUN uv tool install ruff
 RUN uv tool install mypy
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project
+RUN uv sync --frozen --no-install-project --all-groups
 
 COPY . .
