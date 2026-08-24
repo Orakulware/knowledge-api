@@ -10,9 +10,10 @@ from media_record.infrastructure.consumer.tasks import (
     PostMediaRecordPayload,
 )
 from pydantic import BaseModel, Field
+from schemas import ErrorResponse
 from taskiq import AsyncTaskiqDecoratedTask
 
-media_record_router = APIRouter()
+media_record_router = APIRouter(prefix="/api/v1/media-record", tags=["V1 Media Record"])
 
 
 class PostMediaRecordRequestBody(BaseModel):
@@ -27,12 +28,14 @@ def get_post_media_record_task(request: Request) -> AsyncTaskiqDecoratedTask:
 
 
 @media_record_router.post(
-    path="/",
+    path="/media-record/",
     status_code=202,
+    summary="Queue a media record for ingestion",
     dependencies=[
         Depends(middleware.rate_limiter),
         Depends(middleware.auth.access_token_required),
     ],
+    responses={401: {"model": ErrorResponse}},
 )
 async def post_media_record(
     body: PostMediaRecordRequestBody,
@@ -63,10 +66,12 @@ def get_post_media_task(request: Request) -> AsyncTaskiqDecoratedTask:
 @media_record_router.post(
     path="/media/",
     status_code=202,
+    summary="Register a new media source",
     dependencies=[
         Depends(middleware.rate_limiter),
         Depends(middleware.auth.access_token_required),
     ],
+    responses={401: {"model": ErrorResponse}},
 )
 async def post_media(
     body: PostMediaRequestBody,

@@ -41,7 +41,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     await consumer.shutdown()
 
 
-app = FastAPI(lifespan=lifespan)
+tags_metadata = [
+    {
+        "name": "V1 Media Record",
+        "description": "V1 Ingest media sources and the records posted to them.",
+    },
+]
+
+app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
 app.state.container = setup.bootstrap()
 app.state.database = SQLAlchemyDatabase(config=PostgresConfig.from_env())
 app.include_router(auth_presentation.auth_router)
