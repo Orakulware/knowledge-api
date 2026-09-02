@@ -1,14 +1,19 @@
 [project]
 name = "knowledge-api"
 version = "0.1.0"
-description = "Add your description here"
+description = "Core service for the Orakulware"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
     "authx>=1.6.0",
+    "dependency-injector>=4.49.1",
     "fastapi[standard]>=0.136.3",
     "sqlalchemy>=2.0.50",
+    "taskiq>=0.12.4",
+    "taskiq-aio-pika>=0.6.0",
+    "taskiq-redis>=1.2.3",
 ]
 
 [tool.ruff.lint]
@@ -23,6 +28,9 @@ ignore = [
     "TC001",
     "TC002",
     "TC003",
+
+    # Already have license
+    "CPY001",
 
     # only affects perfomance and brings nothing useful
     "UP038",

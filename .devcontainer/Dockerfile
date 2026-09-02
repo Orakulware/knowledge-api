@@ -15,6 +15,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pinentry-curses \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js (npm bundled). Required to install claude skills of your choise.
+RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install hurl (HTTP E2E test runner, used by `make hurl-e2e`)
+RUN HURL_ARCH="$(dpkg --print-architecture)" \
+    && curl -fsSLO "https://github.com/Orange-OpenSource/hurl/releases/download/8.0.1/hurl_8.0.1_${HURL_ARCH}.deb" \
+    && apt-get install -y --no-install-recommends "./hurl_8.0.1_${HURL_ARCH}.deb" \
+    && rm "hurl_8.0.1_${HURL_ARCH}.deb"
+
 # Install Oh My Zsh (unattended)
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
@@ -37,6 +48,6 @@ RUN uv tool install ruff
 RUN uv tool install mypy
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project
+RUN uv sync --frozen --no-install-project --all-groups
 
 COPY . .
