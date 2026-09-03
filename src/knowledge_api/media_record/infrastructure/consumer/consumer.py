@@ -2,7 +2,12 @@ import logging
 from abc import ABC, abstractmethod
 
 from config import RabbitMQConfig, RedisConfig
-from taskiq import AsyncBroker, AsyncResultBackend
+from media_record.infrastructure.consumer.exceptions import (
+    BrokerUnavailableError,
+    ConsumerNotStartedError,
+)
+from redis.asyncio import Redis
+from taskiq import AsyncBroker
 from taskiq_aio_pika import AioPikaBroker
 from taskiq_redis import RedisAsyncResultBackend
 
@@ -23,6 +28,16 @@ class MediaRecordConsumer(ABC):
     async def shutdown(self) -> None:
         raise NotImplementedError
 
+    @abstractmethod
+    async def ping_broker(self) -> None:
+        """Return normally when the broker is reachable, raise otherwise."""
+        raise NotImplementedError
+
+    @abstractmethod
+    async def ping_result_backend(self) -> None:
+        """Return normally when the result backend is reachable, raise otherwise."""
+        raise NotImplementedError
+
 
 class TaskiqAioPikaRedisMediaRecordConsumer(MediaRecordConsumer):
     """Media record consumer with Rabbit MQ broker and Redis backend"""
@@ -35,13 +50,13 @@ class TaskiqAioPikaRedisMediaRecordConsumer(MediaRecordConsumer):
         self._rabbitmq_url = rabbitmq_config.url
         self._redis_url = redis_config.url
 
-        self._result_backend: AsyncResultBackend = RedisAsyncResultBackend(
+        self._result_backend: RedisAsyncResultBackend[None] = RedisAsyncResultBackend(
             redis_url=self._redis_url,
             keep_results=True,
             result_ex_time=86400,
         )
 
-        self._broker: AsyncBroker = AioPikaBroker(
+        self._broker: AioPikaBroker = AioPikaBroker(
             url=self._rabbitmq_url,
         ).with_result_backend(
             self._result_backend,
@@ -58,3 +73,18 @@ class TaskiqAioPikaRedisMediaRecordConsumer(MediaRecordConsumer):
     async def shutdown(self) -> None:
         logger.info("Shuting down %s consumer", self.__class__.__name__)
         await self._broker.shutdown()
+
+    async def ping_broker(self) -> None:
+        # A robust connection reopens itself after an outage, so the state of
+        # the write channel - not of the connection - is what says whether a
+        # message can be published right now.
+        connection = self._broker.write_conn
+        channel = self._broker.write_channel
+        if connection is None or channel is None:
+            raise ConsumerNotStartedError
+        if connection.is_closed or connection.reconnecting or channel.is_closed:
+            raise BrokerUnavailableError
+
+    async def ping_result_backend(self) -> None:
+        async with Redis(connection_pool=self._result_backend.redis_pool) as redis:
+            await redis.ping()

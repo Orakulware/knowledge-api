@@ -59,11 +59,12 @@ install:
 HURL_FILES = e2e/hurl/01_login.hurl \
 	e2e/hurl/02_post_media.hurl \
 	e2e/hurl/03_post_media_record.hurl \
-	e2e/hurl/04_rate_limit.hurl
+	e2e/hurl/04_rate_limit.hurl \
+	e2e/hurl/05_health.hurl
 
 hurl-e2e:
 	docker compose up --build -d
-	@until curl -sf http://localhost:8000/docs > /dev/null 2>&1; do sleep 1; done
+	@until curl -sf http://localhost:8000/health/ready/ > /dev/null 2>&1; do sleep 1; done
 	$(ENV) hurl --test --jobs 1 \
 		--variable host=http://localhost:8000 \
 		--variable admin_login="$$ADMIN_LOGIN" \

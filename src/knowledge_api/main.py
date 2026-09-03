@@ -8,6 +8,7 @@ from auth import presentation as auth_presentation
 from config import PostgresConfig
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from health import presentation as health_presentation
 from media_record import presentation as media_record_presentation
 from media_record.infrastructure.consumer import tasks as media_record_tasks
 from schemas import AppError, ErrorResponse
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     container = app.state.container
     consumer = container.media_record_infrastructure.media_record_consumer()
     broker = consumer.broker
+    app.state.media_record_consumer = consumer
 
     app.state.post_media_record_task, app.state.post_media_task = (
         media_record_tasks.register_tasks(broker)
@@ -46,6 +48,10 @@ tags_metadata = [
         "name": "V1 Media Record",
         "description": "V1 Ingest media sources and the records posted to them.",
     },
+    {
+        "name": "Health",
+        "description": "Liveness and readiness probes for orchestrators.",
+    },
 ]
 
 app = FastAPI(lifespan=lifespan, openapi_tags=tags_metadata)
@@ -53,6 +59,7 @@ app.state.container = setup.bootstrap()
 app.state.database = SQLAlchemyDatabase(config=PostgresConfig.from_env())
 app.include_router(auth_presentation.auth_router)
 app.include_router(media_record_presentation.media_record_router)
+app.include_router(health_presentation.health_router)
 middleware.auth.handle_errors(app=app)
 
 
